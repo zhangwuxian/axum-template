@@ -1,20 +1,35 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
-pub struct Response<T> {
-    pub code: u64,
-    pub data: T,
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ApiResponse<T> {
+    pub code: i32,
+    pub message: String,
+    pub data: Option<T>,
 }
 
-pub fn success_response<T: Serialize>(data: T) -> String {
-    let resp = Response { code: 200, data };
-    serde_json::to_string(&resp).unwrap()
+impl<T> Default for ApiResponse<T> {
+    fn default() -> Self {
+        Self {
+            code: 0,
+            message: "Success".to_string(),
+            data: None,
+        }
+    }
 }
 
-pub fn error_response(err: String) -> String {
-    let resp = Response {
-        code: 500,
-        data: err,
-    };
-    serde_json::to_string(&resp).unwrap()
+impl<T> ApiResponse<T> {
+    pub fn success(data: T) -> Self {
+        Self {
+            data: Some(data),
+            ..Default::default()
+        }
+    }
+
+    pub fn error(code: i32, message: impl Into<String>) -> Self {
+        Self {
+            code,
+            message: message.into(),
+            data: None,
+        }
+    }
 }

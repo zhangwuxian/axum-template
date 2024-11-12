@@ -1,7 +1,12 @@
 [log]
-log_config = "../config/log4rs.yaml"
+log_config = "./config/log4rs.yaml"
 log_path = "./logs"
 
 [server]
 port = 9293
+username = "admin"
+password = "123456"
 jwt_secret = "woshigelaicoushude"
+jwt_audience = "my-middleware"
+jwt_issuer = "ztom"
+jwt_expire = 60

@@ -1,5 +1,6 @@
-use crate::http::auth::auth_middleware;
-use crate::http::handlers::{get_machine_list_handler, login_handler};
+use crate::auth::auth_middleware;
+use crate::handler::login::login_handler;
+use crate::handler::sample::hello_handler;
 use crate::http::state::HttpServerState;
 use axum::routing::post;
 use axum::Router;
@@ -56,12 +57,9 @@ pub async fn start_http_server(state: HttpServerState, stop_sx: broadcast::Sende
 fn routes(state: HttpServerState) -> Router {
     let no_auth_routers = Router::new().route("/login", post(login_handler));
 
-    let auth_routers = Router::new()
-        .route("/get", post(get_machine_list_handler))
-        .layer(axum::middleware::from_fn_with_state(
-            state.clone(),
-            auth_middleware,
-        ));
+    let auth_routers = Router::new().route("/get", post(hello_handler)).layer(
+        axum::middleware::from_fn_with_state(state.clone(), auth_middleware),
+    );
 
     let app = Router::new().merge(no_auth_routers).merge(auth_routers);
     app.with_state(state)

@@ -17,7 +17,12 @@ pub struct LogConfig {
 #[derive(Serialize, Deserialize)]
 pub struct ServerConfig {
     pub port: usize,
+    pub username: String,
+    pub password: String,
     pub jwt_secret: String,
+    pub jwt_audience: String,
+    pub jwt_issuer: String,
+    pub jwt_expire: usize,
 }
 
 static APP_CONF: OnceLock<AppConfig> = OnceLock::new();
@@ -60,7 +65,7 @@ mod tests {
         println!("config_path: {}", config_path);
         let config = init_app_conf_by_path(&config_path);
 
-        assert_eq!(config.log.log_config, "../config/log4rs.yaml");
+        assert_eq!(config.log.log_config, "./config/log4rs.yaml");
         assert_eq!(config.log.log_path, "./logs")
     }
 }

@@ -1,11 +1,12 @@
 use clap::Parser;
-use common::config::{get_app_conf, init_app_conf_by_path};
-use common::log::init_app_log;
 use log::info;
-use server::http::server::start_http_server;
-use server::http::state::HttpServerState;
 use tokio::signal;
 use tokio::sync::broadcast;
+
+use common::config::init_app_conf_by_path;
+use common::log::init_app_log;
+use server::http::server::start_http_server;
+use server::http::state::HttpServerState;
 
 pub const DEFAULT_APP_CONFIG: &str = "config/http-server.toml";
 
@@ -28,9 +29,7 @@ pub async fn main() {
     let (stop_send, _) = broadcast::channel(2);
     let stop_sx = stop_send.clone();
     tokio::spawn(async move {
-        let app_conf = get_app_conf();
-        let jwt_secret = app_conf.server.jwt_secret.to_owned();
-        let state = HttpServerState::new(jwt_secret);
+        let state = HttpServerState::default();
         start_http_server(state, stop_sx).await;
     });
 
